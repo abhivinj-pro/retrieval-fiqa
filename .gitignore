@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+.Retrieve/
+venv/
+env/
+
+# Generated at runtime (downloaded / built inside the container or locally)
+datasets/
+index_artifacts/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Not part of this submission
+Assignment
+KNOWLEDGE.html
+tests/
+results/

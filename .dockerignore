@@ -1,0 +1,31 @@
+# Virtual environments (host-built, wrong OS/arch for Linux image)
+.venv/
+.Retrieve/
+venv/
+env/
+
+# Python caches
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Pre-built artifacts: regenerated inside the container for reproducibility.
+# (Comment these out if you want to ship a pre-built index in the image.)
+index_artifacts/
+datasets/
+results/bench.json
+
+# VCS / editor
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Docs/scratch not needed at runtime
+KNOWLEDGE.html
+Assignment
