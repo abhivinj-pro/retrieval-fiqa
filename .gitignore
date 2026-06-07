@@ -24,4 +24,5 @@ Thumbs.db
 Assignment
 KNOWLEDGE.html
 tests/
-results/
+results/*
+!results/bench.json
