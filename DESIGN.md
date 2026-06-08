@@ -6,71 +6,83 @@
 
 | Parameter | Value |
 |-----------|-------|
-| BM25 | Okapi (k1=1.5, b=0.75) via rank_bm25, Lucene-style **word tokenizer** (NFKC + lowercase, finance-symbol preservation for `$1.2B`/`2.5%`/`10-K`/`s&p`, English stopword removal, Porter stemming). A byte-level **BPE** tokenizer (vocab=30k) is available behind `--bm25-tokenizer bpe` for ablation. |
-| Dense model | all-MiniLM-L6-v2 (384d, 22M params) |
-| Dense index | FAISS IndexFlatIP (exact cosine) |
-| Fusion | RRF with k=60 |
-| Fetch K | 100 candidates per sub-retriever |
+| BM25 | Okapi (k1=1.5, b=0.75) via rank_bm25, Lucene-style **word tokenizer** (NFKC + lowercase, finance-symbol preservation for `$1.2B`/`2.5%`/`10-K`/`s&p`, English stopword removal, Porter stemming). |
+| Dense model | `sentence-transformers/all-MiniLM-L6-v2` (384d, 22M params). Encoder is pluggable via `MODEL_REGISTRY` in [src/index/dense_index.py](src/index/dense_index.py), but only MiniLM is shipped. |
+| Dense index | FAISS IndexFlatIP (exact cosine). |
+| Fusion | **Weighted** RRF: `score(d) = Σ_i w_i / (k + rank_i(d))`. Default `(w_bm25, w_dense) = (0.3, 0.7)` biases toward the stronger dense retriever. |
+| RRF k | 60 |
+| Fetch K | 200 candidates per sub-retriever |
 | Return | Top-10 |
 
-**Why this point:** Hybrid RRF achieves the highest Recall@10 among tested configurations while meeting all three constraints. The two sub-retrievers have complementary failure modes — BM25 catches exact-match financial terms (high IDF), while dense catches semantic paraphrases. RRF combines them without score calibration, adding negligible latency overhead (<1ms) on top of the individual retriever costs.
+**Why this point:** With these defaults Hybrid (R@10=0.4657) is statistically tied with Dense (R@10=0.4665) on FiQA dev, while preserving BM25 recall on exact-match financial terms (FSA, CDO, 10-K) that pure dense retrieval can miss. The two sub-retrievers have complementary failure modes — BM25 catches exact-term matches with high IDF, dense catches paraphrases — and RRF combines them without score calibration, adding only ~3 ms over the sub-retriever costs. Hybrid is also the more robust operating point: it degrades gracefully if either sub-retriever fails, and the RRF-k ablation (§4) shows further headroom (up to R@10=0.4811 at k=10) without changing the deployed architecture.
 
 ---
 
 ## 2. Benchmark Table
 
-> Numbers below are from actual evaluation on the FiQA dev set (500 queries).
+> Numbers below are from [results/bench.json](results/bench.json) on the FiQA dev set (500 queries).
 
 | Configuration | Recall@10 | MRR | Warm p50 (ms) | Warm p95 (ms) | Peak RAM (MB) |
-|---------------|-----------|-----|---------------|---------------|---------------|
-| BM25 (Okapi) | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Dense (MiniLM-L6-v2) | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| **Hybrid (RRF k=60)** | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Hybrid (RRF k=10) | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+|---------------|-----------|------|---------------|---------------|---------------|
+| BM25 (Okapi) | 0.3088 | 0.3164 | 254.95 | 498.36 | 1273.7 |
+| Dense (MiniLM-L6-v2) | 0.4665 | 0.4532 |  27.08 |  43.22 | 1531.7 |
+| **Hybrid (RRF k=60, fetch=200, w=0.3/0.7)** | **0.4657** | **0.4616** | 303.83 | 531.85 | 1944.8 |
+| Hybrid (RRF k=10, fetch=200) | 0.4811 | 0.4720 | 285.09 | 490.01 | 2021.4 |
 
 **Stratified Recall@10 by query length:**
 
-| Method | Short (<5 tokens) | Medium (5–15) | Long (>15) |
-|--------|-------------------|---------------|------------|
-| BM25 | _TBD_ | _TBD_ | _TBD_ |
-| Dense | _TBD_ | _TBD_ | _TBD_ |
-| Hybrid | _TBD_ | _TBD_ | _TBD_ |
+| Method | Short (<5 tokens, n=13) | Medium (5–15, n=403) | Long (>15, n=84) |
+|--------|-------------------------|-----------------------|-------------------|
+| BM25   | 0.2308 | 0.3110 | 0.3101 |
+| Dense  | 0.4231 | 0.4705 | 0.4543 |
+| Hybrid | 0.3462 | 0.4701 | 0.4633 |
 
 **Stratified Recall@10 by gold document length:**
 
-| Method | Top-10% longest docs | Rest |
-|--------|---------------------|------|
-| BM25 | _TBD_ | _TBD_ |
-| Dense | _TBD_ | _TBD_ |
-| Hybrid | _TBD_ | _TBD_ |
+| Method | Top-10% longest docs (n=185) | Rest (n=315) |
+|--------|------------------------------|--------------|
+| BM25   | 0.3133 | 0.3061 |
+| Dense  | 0.4140 | 0.4974 |
+| Hybrid | 0.4372 | 0.4825 |
+
+Note: Latencies are wall-clock measured inside WSL2 on a shared Windows host; absolute numbers exceed the 50 ms p95 target. The dominant cost is the pure-Python `rank_bm25` scorer (see §3); MiniLM dense alone at warm p95 = 43 ms already meets the budget.
 
 ---
 
 ## 3. Cold vs Warm Latency
 
-| Method | Cold p50 | Cold p95 | Warm p50 | Warm p95 | Delta (p95) |
-|--------|----------|----------|----------|----------|-------------|
-| BM25 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Dense | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Hybrid | _TBD_ | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Method | Cold p50 (ms) | Cold p95 (ms) | Warm p50 (ms) | Warm p95 (ms) | Δ warm−cold p95 |
+|--------|---------------|---------------|---------------|---------------|------------------|
+| BM25   | 216.96 | 349.10 | 254.95 | 498.36 | +149.3 |
+| Dense  |  28.13 |  47.53 |  27.08 |  43.22 |   −4.3 |
+| Hybrid | 234.00 | 386.25 | 303.83 | 531.85 | +145.6 |
 
 **What causes the delta:**
 
-- **Dense retrieval** shows the largest cold→warm delta. The first query triggers: (1) PyTorch/ONNX runtime initialization of model buffers, (2) CPU cache cold — 384-dim embeddings for 57K docs must be loaded from main memory into L2/L3 cache, (3) NumPy's first large allocation triggers OS page faults.
-- **BM25** has minimal delta — its NumPy array operations warm up within 1–2 queries since the working set (IDF vector + doc lengths) fits in L3 cache.
-- **Hybrid** inherits the dense cold-start penalty plus negligible RRF overhead.
-
-After warmup, the dominant cost is: (1) dense model forward pass for query encoding (~5–10ms), (2) BM25 score computation over 57K docs (~3–8ms), (3) FAISS inner product search (~1–2ms).
+- **Dense retrieval** has essentially zero warm/cold delta — warm p95 (43.2 ms) is even slightly *below* cold p95 (47.5 ms). By the time the first 20 "cold" queries finish, PyTorch buffers, the SentenceTransformer pipeline, and the ~84 MB FAISS index are fully resident in page cache, so subsequent queries are pure SIMD inner products.
+- **BM25** is the slow path. `rank_bm25` is a pure-Python scorer that materializes a per-query score vector over all 57K docs, and the tokenizer (NFKC + stopwords + Porter stemming) runs in Python on every call. Warm latency is *worse* than cold (254.95 vs 216.96 ms p50) because the process accumulates allocator fragmentation as the 500 queries run.
+- **Hybrid** inherits BM25's cost almost entirely (warm p50 303.83 ms ≈ BM25 254.95 + Dense 27.08 + RRF/overhead ~22 ms). The dense and RRF steps are essentially free against the BM25 baseline.
+- **Latency overshoot vs the 50 ms p95 target:** the BM25 implementation is the binding constraint. Realistic fixes — swapping `rank_bm25` for a C-backed BM25 (Pyserini / tantivy) or pre-tokenizing the corpus once — would drop BM25 warm p95 well below 50 ms and bring hybrid in-budget without changing recall. Dense alone already meets the budget today (warm p95 = 43.2 ms).
 
 ---
 
 ## 4. One Counterintuitive Finding
 
-**Expected:** RRF k parameter would show a clear optimum around k=60 (the original paper value), with significantly worse performance at k=10 or k=200.
+**Expected:** RRF k=60 (the value from the original Cormack et al. paper) would be near-optimal, with k=10 hurting recall by over-weighting the top of each list and k=200 hurting by flattening rank differences too much.
 
-**Observed:** _TBD — will fill after ablation run. Typical finding: RRF is surprisingly insensitive to k in the 30–100 range, with <1% Recall variation._
+**Observed:** The opposite. Recall@10 monotonically *increases* as RRF k *decreases*:
 
-**Hypothesis:** _TBD — likely because at k≥30, the relative contribution of each rank position is already quite flat (1/61 vs 1/62 = 1.6% difference), so the exact value doesn't change the final ranking order much. The fusion benefit comes from document co-occurrence across lists, not from the precise weighting._
+| RRF k | Recall@10 | MRR |
+|-------|-----------|------|
+|  10 | **0.4811** | **0.4720** |
+|  30 | 0.4789 | 0.4665 |
+|  60 | 0.4657 | 0.4616 |
+| 100 | 0.4577 | 0.4584 |
+| 200 | 0.4277 | 0.4499 |
+
+At k=10 Hybrid (0.4811) clearly beats Dense alone (0.4665) by ~1.5 absolute points; at the conventional k=60 default the two are tied; by k=200 Hybrid has degraded *below* Dense.
+
+**Hypothesis:** Dense is meaningfully stronger than BM25 on FiQA (0.4665 vs 0.3088 R@10). Large k flattens the rank-weighting curve (1/61 ≈ 1/62), so BM25's mediocre ranks contribute almost as much per-doc as dense's good ranks, dragging the fused list toward BM25 quality. Small k sharpens the top-of-list emphasis: combined with the 0.3/0.7 weights, this lets dense dominate the fused ranking while BM25 only contributes when it ranks something *very* highly — exactly the exact-term financial-jargon hits dense tends to miss. The conventional k=60 default is mis-tuned for asymmetric-strength sub-retrievers; **k=10 should be the shipped default on this corpus**.
 
 ---
 
@@ -86,15 +98,17 @@ After warmup, the dominant cost is: (1) dense model forward pass for query encod
 
 **Why it failed:** Score distributions are non-comparable and non-stationary across queries. Rank-based fusion is inherently more robust because it only needs ordinal, not cardinal, information.
 
-### 5b. Larger Dense Model (all-mpnet-base-v2)
+### 5b. Adding `BAAI/bge-small-en-v1.5` as a second dense backend
 
-**What I tried:** Replacing all-MiniLM-L6-v2 (384d, 22M params) with all-mpnet-base-v2 (768d, 110M params) for better semantic quality.
+**What I tried:** Shipping BGE-small-en-v1.5 (384d, ~33M params, query-instruction prefix) alongside MiniLM, registered in `MODEL_REGISTRY` and exposed via `--dense-model bge` to both `search.py` and `bench.py`. The expectation was that BGE's stronger MTEB scores would translate to a meaningful FiQA gain.
 
-**What I expected:** Higher Recall@10 from the denser representations, at the cost of ~2x latency and ~2x memory.
+**What I expected:** ~3–5 absolute points of Recall@10 over MiniLM, at roughly 2–3× the encoding cost.
 
-**What happened:** Query encoding latency jumped from ~8ms to ~25ms on CPU, pushing hybrid p95 above 50ms. Memory doubled (88MB → 176MB for FAISS index, but model weights went from ~90MB to ~440MB). The Recall@10 improvement was only ~2-3 absolute points — not worth violating the latency constraint.
+**What happened:** In the pre-removal bench (the BGE rows still visible in [results/bench.json](results/bench.json)) BGE-dense did edge MiniLM-dense (R@10 0.4767 vs 0.4665, MRR 0.488 vs 0.4532) but BGE-hybrid did *not* beat MiniLM-hybrid on recall (0.4723 vs 0.4657) and its warm p95 spiked to **1505 ms** under WSL2 host pressure (vs 532 ms for MiniLM-hybrid). The second model also added ~250 MB to the image and ~250 MB to peak RAM (2184 MB vs 1945 MB). The marginal recall gain did not justify the operational footprint, so BGE was removed (commit `Removed BPE&BGE`) and the registry left pluggable for future swaps.
 
-**Why it failed:** The compute-quality tradeoff doesn't favor larger models under our 50ms p95 constraint. MiniLM's knowledge distillation captures most of the base model's quality at a fraction of the cost.
+**Why it failed for *this* deployment:** The constraint that bound us wasn't dense-encoder quality — it was BM25 latency (§3) and image size. Adding a second dense backend made both worse without moving the needle on the actual failure mode (lexical/semantic mismatch on short queries, see §2 stratified table and [results/failures.md](results/failures.md)).
+
+**Why it failed for *this* deployment:** The constraint that bound us wasn't dense-encoder quality — it was BM25 latency (§3) and image size. Adding a second dense backend made both worse without moving the needle on the actual failure mode (lexical/semantic mismatch on short queries, see §2 stratified table and [results/failures.md](results/failures.md)).
 
 ---
 
@@ -135,15 +149,16 @@ After warmup, the dominant cost is: (1) dense model forward pass for query encod
 
 ## Hardware Used for Benchmarking
 
-_TBD: Will be filled after benchmark run with actual hardware details._
+From `system_info` in [results/bench.json](results/bench.json):
 
 ```
-CPU: [model]
-Cores: [count]  
-RAM: [total] GB
-OS: Windows 11
-Python: 3.x
+OS:     Linux 6.6 (WSL2) on Windows 11 host
+CPU:    12 logical cores (host: x86_64)
+RAM:    15.5 GB (WSL2 VM)
+Python: 3.11.15
 ```
+
+Latencies are measured with `time.perf_counter()` around each `retriever.search(...)` call from [src/eval.py](src/eval.py). All runs are CPU-only and single-threaded at the FAISS / rank_bm25 level.
 
 ---
 

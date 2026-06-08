@@ -1,0 +1,589 @@
+{
+  "system_info": {
+    "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.41",
+    "processor": "",
+    "cpu_count": 12,
+    "ram_total_gb": 15.5,
+    "python_version": "3.11.15"
+  },
+  "main_eval": [
+    {
+      "config": "BM25 (Okapi)",
+      "overall": {
+        "recall@10": 0.3088,
+        "mrr": 0.3164,
+        "num_queries": 500
+      },
+      "latency": {
+        "cold_p50_ms": 84.31,
+        "cold_p95_ms": 143.28,
+        "warm_p50_ms": 99.9,
+        "warm_p95_ms": 184.48
+      },
+      "memory": {
+        "peak_ram_mb": 1273.5,
+        "delta_mb": 3.1
+      },
+      "stratified": {
+        "by_query_length": {
+          "short_lt5": {
+            "recall@10": 0.2308,
+            "count": 13
+          },
+          "medium_5to15": {
+            "recall@10": 0.311,
+            "count": 403
+          },
+          "long_gt15": {
+            "recall@10": 0.3101,
+            "count": 84
+          }
+        },
+        "by_gold_doc_length": {
+          "top10pct_longest": {
+            "recall@10": 0.3133,
+            "count": 185
+          },
+          "rest": {
+            "recall@10": 0.3061,
+            "count": 315
+          }
+        }
+      }
+    },
+    {
+      "config": "Dense (all-MiniLM-L6-v2)",
+      "overall": {
+        "recall@10": 0.4665,
+        "mrr": 0.4532,
+        "num_queries": 500
+      },
+      "latency": {
+        "cold_p50_ms": 12.1,
+        "cold_p95_ms": 14.94,
+        "warm_p50_ms": 14.54,
+        "warm_p95_ms": 19.07
+      },
+      "memory": {
+        "peak_ram_mb": 1466.2,
+        "delta_mb": 78.8
+      },
+      "stratified": {
+        "by_query_length": {
+          "short_lt5": {
+            "recall@10": 0.4231,
+            "count": 13
+          },
+          "medium_5to15": {
+            "recall@10": 0.4705,
+            "count": 403
+          },
+          "long_gt15": {
+            "recall@10": 0.4543,
+            "count": 84
+          }
+        },
+        "by_gold_doc_length": {
+          "top10pct_longest": {
+            "recall@10": 0.414,
+            "count": 185
+          },
+          "rest": {
+            "recall@10": 0.4974,
+            "count": 315
+          }
+        }
+      }
+    },
+    {
+      "config": "Hybrid (RRF k=60, fetch=100)",
+      "overall": {
+        "recall@10": 0.4218,
+        "mrr": 0.4375,
+        "num_queries": 500
+      },
+      "latency": {
+        "cold_p50_ms": 91.46,
+        "cold_p95_ms": 161.62,
+        "warm_p50_ms": 117.85,
+        "warm_p95_ms": 205.3
+      },
+      "memory": {
+        "peak_ram_mb": 1879.1,
+        "delta_mb": 66.3
+      },
+      "stratified": {
+        "by_query_length": {
+          "short_lt5": {
+            "recall@10": 0.3077,
+            "count": 13
+          },
+          "medium_5to15": {
+            "recall@10": 0.4213,
+            "count": 403
+          },
+          "long_gt15": {
+            "recall@10": 0.4418,
+            "count": 84
+          }
+        },
+        "by_gold_doc_length": {
+          "top10pct_longest": {
+            "recall@10": 0.4096,
+            "count": 185
+          },
+          "rest": {
+            "recall@10": 0.429,
+            "count": 315
+          }
+        }
+      }
+    }
+  ],
+  "ablations": {
+    "rrf_k": [
+      {
+        "config": "Hybrid RRF k=10",
+        "overall": {
+          "recall@10": 0.4568,
+          "mrr": 0.4491,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 96.61,
+          "cold_p95_ms": 152.76,
+          "warm_p50_ms": 114.94,
+          "warm_p95_ms": 196.67
+        },
+        "memory": {
+          "peak_ram_mb": 2442.8,
+          "delta_mb": 67.2
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3462,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4576,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4704,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4331,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4707,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid RRF k=30",
+        "overall": {
+          "recall@10": 0.4373,
+          "mrr": 0.4413,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 128.47,
+          "cold_p95_ms": 193.85,
+          "warm_p50_ms": 118.7,
+          "warm_p95_ms": 203.67
+        },
+        "memory": {
+          "peak_ram_mb": 2442.8,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3462,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4355,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.46,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4145,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4507,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid RRF k=60",
+        "overall": {
+          "recall@10": 0.4218,
+          "mrr": 0.4375,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 98.94,
+          "cold_p95_ms": 150.46,
+          "warm_p50_ms": 116.64,
+          "warm_p95_ms": 204.74
+        },
+        "memory": {
+          "peak_ram_mb": 2442.8,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3077,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4213,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4418,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4096,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.429,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid RRF k=100",
+        "overall": {
+          "recall@10": 0.4199,
+          "mrr": 0.4357,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 95.98,
+          "cold_p95_ms": 165.59,
+          "warm_p50_ms": 117.65,
+          "warm_p95_ms": 201.85
+        },
+        "memory": {
+          "peak_ram_mb": 2442.8,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3077,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4204,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4348,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4059,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4282,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid RRF k=200",
+        "overall": {
+          "recall@10": 0.4197,
+          "mrr": 0.4346,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 96.8,
+          "cold_p95_ms": 148.3,
+          "warm_p50_ms": 116.45,
+          "warm_p95_ms": 205.79
+        },
+        "memory": {
+          "peak_ram_mb": 2442.8,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3077,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4202,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4348,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4053,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4282,
+              "count": 315
+            }
+          }
+        }
+      }
+    ],
+    "fetch_k": [
+      {
+        "config": "Hybrid fetch_k=20",
+        "overall": {
+          "recall@10": 0.4536,
+          "mrr": 0.4358,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 102.43,
+          "cold_p95_ms": 161.64,
+          "warm_p50_ms": 121.25,
+          "warm_p95_ms": 216.38
+        },
+        "memory": {
+          "peak_ram_mb": 2521.5,
+          "delta_mb": 66.3
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3462,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4534,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4713,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.434,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4651,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid fetch_k=50",
+        "overall": {
+          "recall@10": 0.4309,
+          "mrr": 0.4387,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 100.26,
+          "cold_p95_ms": 163.95,
+          "warm_p50_ms": 126.81,
+          "warm_p95_ms": 215.31
+        },
+        "memory": {
+          "peak_ram_mb": 2521.5,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3462,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4292,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4521,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4141,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4408,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid fetch_k=100",
+        "overall": {
+          "recall@10": 0.4218,
+          "mrr": 0.4375,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 115.26,
+          "cold_p95_ms": 166.96,
+          "warm_p50_ms": 126.11,
+          "warm_p95_ms": 224.85
+        },
+        "memory": {
+          "peak_ram_mb": 2521.5,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3077,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4213,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4418,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4096,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.429,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid fetch_k=200",
+        "overall": {
+          "recall@10": 0.4262,
+          "mrr": 0.4386,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 99.65,
+          "cold_p95_ms": 160.87,
+          "warm_p50_ms": 121.79,
+          "warm_p95_ms": 209.51
+        },
+        "memory": {
+          "peak_ram_mb": 2521.5,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3462,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.4262,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4389,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4081,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4369,
+              "count": 315
+            }
+          }
+        }
+      },
+      {
+        "config": "Hybrid fetch_k=500",
+        "overall": {
+          "recall@10": 0.4336,
+          "mrr": 0.4391,
+          "num_queries": 500
+        },
+        "latency": {
+          "cold_p50_ms": 105.1,
+          "cold_p95_ms": 168.66,
+          "warm_p50_ms": 125.53,
+          "warm_p95_ms": 220.29
+        },
+        "memory": {
+          "peak_ram_mb": 2521.5,
+          "delta_mb": 0.0
+        },
+        "stratified": {
+          "by_query_length": {
+            "short_lt5": {
+              "recall@10": 0.3462,
+              "count": 13
+            },
+            "medium_5to15": {
+              "recall@10": 0.434,
+              "count": 403
+            },
+            "long_gt15": {
+              "recall@10": 0.4448,
+              "count": 84
+            }
+          },
+          "by_gold_doc_length": {
+            "top10pct_longest": {
+              "recall@10": 0.4225,
+              "count": 185
+            },
+            "rest": {
+              "recall@10": 0.4401,
+              "count": 315
+            }
+          }
+        }
+      }
+    ]
+  }
+}

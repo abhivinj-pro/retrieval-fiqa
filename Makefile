@@ -1,16 +1,19 @@
 .PHONY: index eval bench search test clean
 
-# Sentinel files produced by src/build_index.py. Using real files (rather than
-# a .PHONY index target) lets `eval` / `bench` skip rebuilding when artifacts
-# already exist, while still triggering a build on a fresh container.
-BM25_INDEX  := index_artifacts/bm25/bm25_index.pkl
-DENSE_INDEX := index_artifacts/dense/faiss.index
+# Sentinel files produced by src/build_index.py. Using real files (rather
+# than a .PHONY index target) lets `eval` / `bench` skip rebuilding when
+# artifacts already exist, while still triggering a build on a fresh
+# container. `build_index.py` is itself idempotent per-model, so the
+# sentinels and the script agree on what counts as "already built".
+BM25_INDEX      := index_artifacts/bm25/bm25_index.pkl
+DENSE_MINILM    := index_artifacts/dense/faiss.index
 
-$(BM25_INDEX) $(DENSE_INDEX):
+$(BM25_INDEX) $(DENSE_MINILM):
 	python src/build_index.py
 
-# Build all indexes (BM25 + dense). Idempotent: no-op if artifacts exist.
-index: $(BM25_INDEX) $(DENSE_INDEX)
+# Build all indexes (BM25 + MiniLM). Idempotent: skips per-model
+# if the artifact already exists.
+index: $(BM25_INDEX) $(DENSE_MINILM)
 
 # Run evaluation on all methods (auto-builds indexes if missing).
 eval: index
@@ -21,11 +24,12 @@ bench: index
 	python src/bench.py
 
 # Interactive search (usage: make search QUERY="what is short selling?" METHOD=hybrid)
-QUERY ?= "what is short selling?"
+QUERY  ?= "what is short selling?"
 METHOD ?= hybrid
-TOP_K ?= 10
+TOP_K  ?= 10
+MODEL  ?= minilm
 search:
-	python src/search.py --query $(QUERY) --method $(METHOD) --top-k $(TOP_K)
+	python src/search.py --query $(QUERY) --method $(METHOD) --dense-model $(MODEL) --top-k $(TOP_K)
 
 # Run unit tests
 test:

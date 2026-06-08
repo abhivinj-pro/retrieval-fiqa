@@ -1,0 +1,432 @@
+[
+  {
+    "query_id": "3",
+    "query_text": "Having a separate bank account for business/investing, but not a \u201cbusiness account?\u201d",
+    "recall@10": 0.25,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "64556",
+        "score": 0.016091,
+        "text": " If you're a sole proprietor there's no reason to have a separate business account, as long as you keep adequate records, as you are one and the same for tax purposes. My husband and I already have 5 "
+      },
+      {
+        "rank": 2,
+        "doc_id": "537593",
+        "score": 0.016052,
+        "text": " Yes, it's a good idea to have a separate business account for your business because it makes accounting and bookkeeping that much easier. You can open a business checking account and there will be va"
+      },
+      {
+        "rank": 3,
+        "doc_id": "364378",
+        "score": 0.015856,
+        "text": " As an LLC you are required to have a separate bank account (so you can't have one account and mix personal and business finances together as you could if you were a sole trader) - but there's no requ"
+      },
+      {
+        "rank": 4,
+        "doc_id": "296717",
+        "score": 0.015133,
+        "text": " \"Having a separate checking account for the business makes sense. It simplifies documenting your income/expenses. You can \"\"explain\"\" every dollar entering and exiting the account without having to r"
+      },
+      {
+        "rank": 5,
+        "doc_id": "109203",
+        "score": 0.015084,
+        "text": " You could, but the bank won't let you... If you're a sole proprietor - then you could probably open a personal account and just use it, and never tell them that is actually a business. However, depen"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "146317",
+      "rank": 83,
+      "score": 0.006087,
+      "text": " \"When I was younger I had a problem with Washington Mutual.  Someone had deposited a check in to my account then ran my account negative with a \"\"dupe\"\" of my debit card.  WaMu tied up my account for three months while they investigated because it wasn't simply a debit card fraud issue, this was ch"
+    }
+  },
+  {
+    "query_id": "3",
+    "query_text": "Having a separate bank account for business/investing, but not a \u201cbusiness account?\u201d",
+    "recall@10": 0.25,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "64556",
+        "score": 0.016091,
+        "text": " If you're a sole proprietor there's no reason to have a separate business account, as long as you keep adequate records, as you are one and the same for tax purposes. My husband and I already have 5 "
+      },
+      {
+        "rank": 2,
+        "doc_id": "537593",
+        "score": 0.016052,
+        "text": " Yes, it's a good idea to have a separate business account for your business because it makes accounting and bookkeeping that much easier. You can open a business checking account and there will be va"
+      },
+      {
+        "rank": 3,
+        "doc_id": "364378",
+        "score": 0.015856,
+        "text": " As an LLC you are required to have a separate bank account (so you can't have one account and mix personal and business finances together as you could if you were a sole trader) - but there's no requ"
+      },
+      {
+        "rank": 4,
+        "doc_id": "296717",
+        "score": 0.015133,
+        "text": " \"Having a separate checking account for the business makes sense. It simplifies documenting your income/expenses. You can \"\"explain\"\" every dollar entering and exiting the account without having to r"
+      },
+      {
+        "rank": 5,
+        "doc_id": "109203",
+        "score": 0.015084,
+        "text": " You could, but the bank won't let you... If you're a sole proprietor - then you could probably open a personal account and just use it, and never tell them that is actually a business. However, depen"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "100764",
+      "rank": 64,
+      "score": 0.006781,
+      "text": " \"You don't specify which country you are in, so my answers are more from a best practice view than a legal view.. I don't intend on using it for personal use, but I mean it's just as possible. This is a dangerous proposition.. You shouldn't co-mingle business expenses with personal expenses.  If th"
+    }
+  },
+  {
+    "query_id": "3",
+    "query_text": "Having a separate bank account for business/investing, but not a \u201cbusiness account?\u201d",
+    "recall@10": 0.25,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "64556",
+        "score": 0.016091,
+        "text": " If you're a sole proprietor there's no reason to have a separate business account, as long as you keep adequate records, as you are one and the same for tax purposes. My husband and I already have 5 "
+      },
+      {
+        "rank": 2,
+        "doc_id": "537593",
+        "score": 0.016052,
+        "text": " Yes, it's a good idea to have a separate business account for your business because it makes accounting and bookkeeping that much easier. You can open a business checking account and there will be va"
+      },
+      {
+        "rank": 3,
+        "doc_id": "364378",
+        "score": 0.015856,
+        "text": " As an LLC you are required to have a separate bank account (so you can't have one account and mix personal and business finances together as you could if you were a sole trader) - but there's no requ"
+      },
+      {
+        "rank": 4,
+        "doc_id": "296717",
+        "score": 0.015133,
+        "text": " \"Having a separate checking account for the business makes sense. It simplifies documenting your income/expenses. You can \"\"explain\"\" every dollar entering and exiting the account without having to r"
+      },
+      {
+        "rank": 5,
+        "doc_id": "109203",
+        "score": 0.015084,
+        "text": " You could, but the bank won't let you... If you're a sole proprietor - then you could probably open a personal account and just use it, and never tell them that is actually a business. However, depen"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "314352",
+      "rank": 167,
+      "score": 0.003256,
+      "text": " If it makes your finances easier, why not? My wife and I had his/hers/our since before we were married. I also have an account to handle transactions for my rental property, and one extra for PayPal use. I was paranoid to give out a checking account number with authorization for a third party to de"
+    }
+  },
+  {
+    "query_id": "17",
+    "query_text": "Income tax exemptions for small business?",
+    "recall@10": 0.0,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "22353",
+        "score": 0.014557,
+        "text": " \"The short answer is you're tax exempt if the tax laws say you are.  There are a bunch of specific exemptions based on who you are, what you're buying and why. Taking British Columbia as an example. "
+      },
+      {
+        "rank": 2,
+        "doc_id": "253210",
+        "score": 0.013046,
+        "text": " This may not exactly answer your question but, as a small business owner, I would highly recommend having a professional handle your taxes. It is worth the money to have it done correctly rather than"
+      },
+      {
+        "rank": 3,
+        "doc_id": "477940",
+        "score": 0.012992,
+        "text": " Consider the individual who pays $1,000,000 in taxes.  His/her income must be substantial.  That is what one should aim for.  Investments for the most part, do not lower ones taxes.   In one of John "
+      },
+      {
+        "rank": 4,
+        "doc_id": "388713",
+        "score": 0.012778,
+        "text": " As a new (very!) small business, the IRS has lots of advice and information for you. Start at https://www.irs.gov/businesses/small-businesses-self-employed and be sure you have several pots of coffee"
+      },
+      {
+        "rank": 5,
+        "doc_id": "156554",
+        "score": 0.012656,
+        "text": " \"This is a great question! I've been an entrepreneur and small business owner for 20+ years and have started small businesses in 3 states that grew into nice income streams for me. I've lived off the"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "146657",
+      "rank": null,
+      "score": null,
+      "text": " Yes, you should be able to deduct at least some of these expenses.  For expense incurred before you started the business: What Are Deductible Startup Costs? The IRS defines \u201cstartup costs\u201d as deductible capital expenses that are used to pay for: 1) The cost of \u201cinvestigating the creation or acquisi"
+    }
+  },
+  {
+    "query_id": "29",
+    "query_text": "Do I need a business credit card?",
+    "recall@10": 0.5,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "195207",
+        "score": 0.015286,
+        "text": " Do you have a separate bank account for your business?  That is generally highly recommended. I have a credit card for my single-member LLC.  I prefer it this way because it makes the separation of p"
+      },
+      {
+        "rank": 2,
+        "doc_id": "550813",
+        "score": 0.015221,
+        "text": " I haven't had a credit card in fifteen years. I use nothing but my debit card. (I find the whole idea of credit on a micro scale loathsome.) I have yet to encounter a single problem doing so, other t"
+      },
+      {
+        "rank": 3,
+        "doc_id": "95966",
+        "score": 0.015136,
+        "text": " \"No you do not need a credit card.  They are convenient to have sometimes.  But you do not \"\"need\"\" one.  I know people who only have one for use when they travel for work and get reimbursed later.  "
+      },
+      {
+        "rank": 4,
+        "doc_id": "85517",
+        "score": 0.014834,
+        "text": " Early on, one might not be able to get credit for their business. For convenience, and the card perks, it makes sense to use the personal card. But for sake of a clean paper trail, I'd choose 1 card "
+      },
+      {
+        "rank": 5,
+        "doc_id": "114494",
+        "score": 0.014762,
+        "text": " I would try to avoid mixing business expenditure with personal expenditure so a second credit card might be a good idea. That said, I did get a business credit card for my company in the UK as I didn"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "103662",
+      "rank": null,
+      "score": null,
+      "text": " I finally got one to separate my business and personal expenses.  It will make accounting at the end of the year a lot easier."
+    }
+  },
+  {
+    "query_id": "29",
+    "query_text": "Do I need a business credit card?",
+    "recall@10": 0.5,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "195207",
+        "score": 0.015286,
+        "text": " Do you have a separate bank account for your business?  That is generally highly recommended. I have a credit card for my single-member LLC.  I prefer it this way because it makes the separation of p"
+      },
+      {
+        "rank": 2,
+        "doc_id": "550813",
+        "score": 0.015221,
+        "text": " I haven't had a credit card in fifteen years. I use nothing but my debit card. (I find the whole idea of credit on a micro scale loathsome.) I have yet to encounter a single problem doing so, other t"
+      },
+      {
+        "rank": 3,
+        "doc_id": "95966",
+        "score": 0.015136,
+        "text": " \"No you do not need a credit card.  They are convenient to have sometimes.  But you do not \"\"need\"\" one.  I know people who only have one for use when they travel for work and get reimbursed later.  "
+      },
+      {
+        "rank": 4,
+        "doc_id": "85517",
+        "score": 0.014834,
+        "text": " Early on, one might not be able to get credit for their business. For convenience, and the card perks, it makes sense to use the personal card. But for sake of a clean paper trail, I'd choose 1 card "
+      },
+      {
+        "rank": 5,
+        "doc_id": "114494",
+        "score": 0.014762,
+        "text": " I would try to avoid mixing business expenditure with personal expenditure so a second credit card might be a good idea. That said, I did get a business credit card for my company in the UK as I didn"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "189642",
+      "rank": 23,
+      "score": 0.009589,
+      "text": " I would suggest at least getting a personal card that you only use for business expenses, even if you don't opt for a business card.  It makes it very clear that expenses on that card are business expenses, and is just more professional.  The same goes for a checking account, if you have one of tho"
+    }
+  },
+  {
+    "query_id": "38",
+    "query_text": "Personal credit card for business expenses",
+    "recall@10": 0.5,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "233751",
+        "score": 0.016314,
+        "text": " If you are just starting out, I would say there is no disadvantage to using a personal card for business expenses. In fact, the advantage of doing so is that the consumer protections are better on pe"
+      },
+      {
+        "rank": 2,
+        "doc_id": "274721",
+        "score": 0.015799,
+        "text": " If your business is a Sole Proprietorship and meets the criteria, then you would file form Schedule C. In this case you can deduct all eligible business expenses, regardless of how you pay for them ("
+      },
+      {
+        "rank": 3,
+        "doc_id": "354716",
+        "score": 0.015687,
+        "text": " Credit card fees on a credit card used for personal expenses are not tax deductible. Credit card fees on a business credit card are deductible on schedule C (or whatever form you're using to report b"
+      },
+      {
+        "rank": 4,
+        "doc_id": "189642",
+        "score": 0.015516,
+        "text": " I would suggest at least getting a personal card that you only use for business expenses, even if you don't opt for a business card.  It makes it very clear that expenses on that card are business ex"
+      },
+      {
+        "rank": 5,
+        "doc_id": "114494",
+        "score": 0.015223,
+        "text": " I would try to avoid mixing business expenditure with personal expenditure so a second credit card might be a good idea. That said, I did get a business credit card for my company in the UK as I didn"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "85517",
+      "rank": 11,
+      "score": 0.014054,
+      "text": " Early on, one might not be able to get credit for their business. For convenience, and the card perks, it makes sense to use the personal card. But for sake of a clean paper trail, I'd choose 1 card and use it exclusively, 100% for the business. Not one card here, one card there."
+    }
+  },
+  {
+    "query_id": "38",
+    "query_text": "Personal credit card for business expenses",
+    "recall@10": 0.5,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "233751",
+        "score": 0.016314,
+        "text": " If you are just starting out, I would say there is no disadvantage to using a personal card for business expenses. In fact, the advantage of doing so is that the consumer protections are better on pe"
+      },
+      {
+        "rank": 2,
+        "doc_id": "274721",
+        "score": 0.015799,
+        "text": " If your business is a Sole Proprietorship and meets the criteria, then you would file form Schedule C. In this case you can deduct all eligible business expenses, regardless of how you pay for them ("
+      },
+      {
+        "rank": 3,
+        "doc_id": "354716",
+        "score": 0.015687,
+        "text": " Credit card fees on a credit card used for personal expenses are not tax deductible. Credit card fees on a business credit card are deductible on schedule C (or whatever form you're using to report b"
+      },
+      {
+        "rank": 4,
+        "doc_id": "189642",
+        "score": 0.015516,
+        "text": " I would suggest at least getting a personal card that you only use for business expenses, even if you don't opt for a business card.  It makes it very clear that expenses on that card are business ex"
+      },
+      {
+        "rank": 5,
+        "doc_id": "114494",
+        "score": 0.015223,
+        "text": " I would try to avoid mixing business expenditure with personal expenditure so a second credit card might be a good idea. That said, I did get a business credit card for my company in the UK as I didn"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "357037",
+      "rank": 74,
+      "score": 0.006195,
+      "text": " You should be careful about mingling your personal money and that of the business, even if it is a sole prop right now.  It is a good habit to keep separate business and personal bank/credit accounts just so that when you change to an LLC, it is simpler for you to separate what belongs to the compa"
+    }
+  },
+  {
+    "query_id": "44",
+    "query_text": "Borrow money to invest in a business venture with equity?",
+    "recall@10": 0.0,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "575869",
+        "score": 0.016314,
+        "text": " \"Basically, you either borrow money, or get other people to invest in your business by buying stock or something analogous.  Sometimes you can get people to \"\"park\"\" money with you. For example, many"
+      },
+      {
+        "rank": 2,
+        "doc_id": "180249",
+        "score": 0.015906,
+        "text": " Is the following correct?  The firm needs $20,000 for the investment. It borrows $6,000 @ 7%, and supplies $14,000 in equity.  The interest expense on the borrowing is $420 ($6,000 times 7%).  After "
+      },
+      {
+        "rank": 3,
+        "doc_id": "294150",
+        "score": 0.014341,
+        "text": " There is no right and wrong answer to this question. What you and your business partner perceive as Fair is the best way to split the ownership of the new venture.  First, regarding the two issues yo"
+      },
+      {
+        "rank": 4,
+        "doc_id": "252853",
+        "score": 0.013898,
+        "text": " \"Yes, it is common for investors to make equity investments in technology companies pre-IPO.  There are technology incubators like Y Combinator that exist to make \"\"angel\"\" investments, which are ear"
+      },
+      {
+        "rank": 5,
+        "doc_id": "121161",
+        "score": 0.013889,
+        "text": " Borrow money and start a business.  Follow your business plan and invest in yourself and your entrepreneurship. If you mean invest in the market, do not borrow money.  In your plan, you are willing t"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "385881",
+      "rank": null,
+      "score": null,
+      "text": " It's clearly a risk, but is it any different than investing in your own business? Yes, it is different.  If you own a business, you determine the path of the business.  You determine how much risk the business takes.  You can put in extra effort to try to make the business work.  You can choose to "
+    }
+  },
+  {
+    "query_id": "60",
+    "query_text": "Can Health-Releated Services be a Business Expense?",
+    "recall@10": 0.0,
+    "top_5": [
+      {
+        "rank": 1,
+        "doc_id": "289620",
+        "score": 0.014452,
+        "text": " (1). Is this right? Pretty much, though this is a really rudimentary way to think about it. (2). If it is, why is it that extensive services are provided by high margin companies competing for talent"
+      },
+      {
+        "rank": 2,
+        "doc_id": "451993",
+        "score": 0.014178,
+        "text": " Why the hell is health care still tied to employment?  Does anyone really think that is a reasonable function of business?  All this does is make hiring human workers less attractive.    Guess what. "
+      },
+      {
+        "rank": 3,
+        "doc_id": "231449",
+        "score": 0.013748,
+        "text": " Doesn't matter what the product is, whether it's a tangible good or a service, a business is still a business and must be run as thus. If you don't run a hospital properly, as a business that provide"
+      },
+      {
+        "rank": 4,
+        "doc_id": "194308",
+        "score": 0.012402,
+        "text": " Well, if you were a business, and your food and rent and travel expenses were business expenses, and you paid out less money than you earned, you *would* get a refund.  If you can prove that an expen"
+      },
+      {
+        "rank": 5,
+        "doc_id": "333440",
+        "score": 0.012301,
+        "text": " Last I checked, all business expenses in regards to  * Office Supplies * Stationary * Phone service * Marketing  are all tax deductible....so how does cutting those costs save money when you'll get t"
+      }
+    ],
+    "gold_doc": {
+      "doc_id": "381151",
+      "rank": 12,
+      "score": 0.010559,
+      "text": " Chris, since you own your own company, nobody can stop you from charging your personal expenses to your business account. IRS is not a huge fan of mixing business and personal expenses and this practice might indicate to them that you are not treating your business seriously, and it should classify"
+    }
+  }
+]

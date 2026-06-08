@@ -80,7 +80,7 @@ def generate_failures_md(failures, output_path):
     """Generate failures.md from failure cases."""
     lines = [
         "# Failure Analysis\n",
-        "Three specific failure cases from the hybrid (RRF k=60) evaluation on FiQA dev set.\n",
+        "Three specific failure cases from the hybrid (weighted RRF) evaluation on FiQA dev set.\n",
         "---\n"
     ]
     
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     print("Loading retrievers...")
     bm25 = BM25Retriever()
     dense = DenseRetriever()
-    hybrid = HybridRetriever(bm25, dense, rrf_k=60, fetch_k=100)
+    hybrid = HybridRetriever(bm25, dense)  # use tuned defaults
     
     print("Finding failure cases...")
     failures = find_failures(hybrid, queries, qrels, corpus, top_k=10, max_failures=10)

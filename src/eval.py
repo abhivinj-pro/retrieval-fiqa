@@ -15,6 +15,7 @@ from src.data import load_fiqa, get_corpus_texts
 from src.retrieval.bm25_retriever import BM25Retriever
 from src.retrieval.dense_retriever import DenseRetriever
 from src.retrieval.hybrid_retriever import HybridRetriever
+from src.index.dense_index import MODEL_REGISTRY, DEFAULT_MODEL_KEY
 
 
 def recall_at_k(results: List[Tuple[str, float]], relevant: set, k: int = 10) -> float:
@@ -221,9 +222,23 @@ def evaluate_retriever(retriever, queries: Dict, qrels: Dict, corpus: Dict,
     return metrics
 
 
-def run_full_eval(methods: List[str] = None, rrf_k: int = 60, fetch_k: int = 100,
+def run_full_eval(methods: List[str] = None,
+                  dense_model: str = DEFAULT_MODEL_KEY,
+                  rrf_k: int = HybridRetriever.DEFAULT_RRF_K,
+                  fetch_k: int = HybridRetriever.DEFAULT_FETCH_K,
+                  weights: Tuple[float, float] = HybridRetriever.DEFAULT_WEIGHTS,
+                  fusion: str = HybridRetriever.DEFAULT_FUSION,
                   output_path: str = None):
-    """Run evaluation across all methods and save results."""
+    """Run evaluation across the given methods and save results.
+
+    Args:
+        methods: subset of ``{"bm25", "dense", "hybrid"}``.
+        dense_model: dense model key. Used for both the standalone
+            ``"dense"`` method and the dense sub-retriever of ``"hybrid"``.
+        rrf_k / fetch_k / weights: hybrid hyperparameters.
+        output_path: where to write the JSON. If ``None``, defaults to
+            ``results/bench.json``.
+    """
     if methods is None:
         methods = ["bm25", "dense", "hybrid"]
     
@@ -232,23 +247,31 @@ def run_full_eval(methods: List[str] = None, rrf_k: int = 60, fetch_k: int = 100
     print(f"Corpus: {len(corpus)} docs | Queries: {len(queries)} | Qrels: {len(qrels)}")
     
     all_metrics = []
+    hf_name = MODEL_REGISTRY[dense_model]["hf_name"]
     
     for method in methods:
         print(f"\n{'='*60}")
-        print(f"Evaluating: {method}")
+        print(f"Evaluating: {method} (dense_model={dense_model})")
         print(f"{'='*60}")
         
         if method == "bm25":
             retriever = BM25Retriever()
             label = "BM25 (Okapi)"
         elif method == "dense":
-            retriever = DenseRetriever()
-            label = "Dense (all-MiniLM-L6-v2)"
+            retriever = DenseRetriever(model_key=dense_model)
+            label = f"Dense ({hf_name})"
         elif method == "hybrid":
             bm25 = BM25Retriever()
-            dense = DenseRetriever()
-            retriever = HybridRetriever(bm25, dense, rrf_k=rrf_k, fetch_k=fetch_k)
-            label = f"Hybrid (RRF k={rrf_k}, fetch={fetch_k})"
+            dense = DenseRetriever(model_key=dense_model)
+            retriever = HybridRetriever(bm25, dense, rrf_k=rrf_k,
+                                        fetch_k=fetch_k, weights=weights,
+                                        fusion=fusion)
+            if fusion == "score":
+                label = (f"Hybrid ({dense_model}, fusion=score, "
+                         f"fetch={fetch_k}, w_bm25={weights[0]}, w_dense={weights[1]})")
+            else:
+                label = (f"Hybrid ({dense_model}, RRF k={rrf_k}, "
+                         f"fetch={fetch_k}, w_bm25={weights[0]}, w_dense={weights[1]})")
         else:
             print(f"Unknown method: {method}, skipping")
             continue
@@ -279,49 +302,133 @@ def run_full_eval(methods: List[str] = None, rrf_k: int = 60, fetch_k: int = 100
     return all_metrics
 
 
-def run_ablation(ablation_name: str, **kwargs):
-    """Run a single ablation experiment."""
+def run_ablation(ablation_name: str, dense_model: str = DEFAULT_MODEL_KEY, **kwargs):
+    """Run a single ablation experiment.
+
+    Supported ablations:
+        - ``"rrf_k"``: vary RRF k (defaults: [10, 30, 60, 100, 200])
+        - ``"fetch_k"``: vary fetch_k (defaults: [20, 50, 100, 200, 500])
+        - ``"weights"``: vary dense weight while BM25 weight=1
+            (defaults: dense ∈ [0.5, 1.0, 1.5, 2.0, 3.0]); RRF fusion only.
+        - ``"fusion"``: cross both fusion strategies (``"rrf"`` and ``"score"``)
+            against the same dense-weight sweep as ``"weights"``. Produces a
+            2 × N grid so per-weight rrf-vs-score comparisons are direct.
+            Accepts ``dense_weights`` kwarg (default: [0.5, 1.0, 1.5, 2.0, 3.0]).
+        - ``"dense_model"``: compare each model_key as standalone dense
+    """
     print(f"Loading FiQA dataset (dev split)...")
     corpus, queries, qrels = load_fiqa(split="dev")
-    
+
     if ablation_name == "rrf_k":
-        # Ablation: vary RRF k parameter
         bm25 = BM25Retriever()
-        dense = DenseRetriever()
+        dense = DenseRetriever(model_key=dense_model)
         k_values = kwargs.get("k_values", [10, 30, 60, 100, 200])
-        
         results = []
         for k in k_values:
-            retriever = HybridRetriever(bm25, dense, rrf_k=k, fetch_k=100)
+            retriever = HybridRetriever(
+                bm25, dense, rrf_k=k,
+                fetch_k=HybridRetriever.DEFAULT_FETCH_K,
+                weights=HybridRetriever.DEFAULT_WEIGHTS,
+            )
             metrics = evaluate_retriever(
                 retriever, queries, qrels, corpus,
                 top_k=10, warmup_queries=50,
-                label=f"Hybrid RRF k={k}"
+                label=f"Hybrid ({dense_model}) RRF k={k}"
             )
             results.append(metrics)
             print(f"  RRF k={k}: Recall@10={metrics['overall']['recall@10']}, "
                   f"MRR={metrics['overall']['mrr']}")
         return results
-    
+
     elif ablation_name == "fetch_k":
-        # Ablation: vary fetch_k (number of candidates from each retriever)
         bm25 = BM25Retriever()
-        dense = DenseRetriever()
+        dense = DenseRetriever(model_key=dense_model)
         fetch_values = kwargs.get("fetch_values", [20, 50, 100, 200, 500])
-        
         results = []
         for fk in fetch_values:
-            retriever = HybridRetriever(bm25, dense, rrf_k=60, fetch_k=fk)
+            retriever = HybridRetriever(
+                bm25, dense, rrf_k=HybridRetriever.DEFAULT_RRF_K,
+                fetch_k=fk, weights=HybridRetriever.DEFAULT_WEIGHTS,
+            )
             metrics = evaluate_retriever(
                 retriever, queries, qrels, corpus,
                 top_k=10, warmup_queries=50,
-                label=f"Hybrid fetch_k={fk}"
+                label=f"Hybrid ({dense_model}) fetch_k={fk}"
             )
             results.append(metrics)
             print(f"  fetch_k={fk}: Recall@10={metrics['overall']['recall@10']}, "
                   f"MRR={metrics['overall']['mrr']}")
         return results
-    
+
+    elif ablation_name == "weights":
+        bm25 = BM25Retriever()
+        dense = DenseRetriever(model_key=dense_model)
+        dense_weights = kwargs.get("dense_weights", [0.5, 1.0, 1.5, 2.0, 3.0])
+        results = []
+        for w in dense_weights:
+            retriever = HybridRetriever(
+                bm25, dense, rrf_k=HybridRetriever.DEFAULT_RRF_K,
+                fetch_k=HybridRetriever.DEFAULT_FETCH_K,
+                weights=(1.0, w),
+            )
+            metrics = evaluate_retriever(
+                retriever, queries, qrels, corpus,
+                top_k=10, warmup_queries=50,
+                label=f"Hybrid ({dense_model}) w_bm25=1, w_dense={w}"
+            )
+            results.append(metrics)
+            print(f"  w_dense={w}: Recall@10={metrics['overall']['recall@10']}, "
+                  f"MRR={metrics['overall']['mrr']}")
+        return results
+
+    elif ablation_name == "fusion":
+        bm25 = BM25Retriever()
+        dense = DenseRetriever(model_key=dense_model)
+        dense_weights = kwargs.get("dense_weights", [0.5, 1.0, 1.5, 2.0, 3.0])
+        results = []
+        for fusion_type in ("rrf", "score"):
+            print(f"  -- fusion={fusion_type} --")
+            for w in dense_weights:
+                w_bm25, w_dense = 1.0, w
+                retriever = HybridRetriever(
+                    bm25, dense,
+                    rrf_k=HybridRetriever.DEFAULT_RRF_K,
+                    fetch_k=HybridRetriever.DEFAULT_FETCH_K,
+                    weights=(w_bm25, w_dense),
+                    fusion=fusion_type,
+                )
+                label = (
+                    f"Hybrid ({dense_model}, fusion={fusion_type}, "
+                    f"fetch={HybridRetriever.DEFAULT_FETCH_K}, "
+                    f"w_bm25={w_bm25}, w_dense={w_dense})"
+                )
+                metrics = evaluate_retriever(
+                    retriever, queries, qrels, corpus,
+                    top_k=10, warmup_queries=50,
+                    label=label,
+                )
+                results.append(metrics)
+                print(f"    w_bm25={w_bm25}, w_dense={w_dense}: "
+                      f"Recall@10={metrics['overall']['recall@10']}, "
+                      f"MRR={metrics['overall']['mrr']}")
+        return results
+
+    elif ablation_name == "dense_model":
+        keys = kwargs.get("model_keys", list(MODEL_REGISTRY.keys()))
+        results = []
+        for key in keys:
+            hf_name = MODEL_REGISTRY[key]["hf_name"]
+            retriever = DenseRetriever(model_key=key)
+            metrics = evaluate_retriever(
+                retriever, queries, qrels, corpus,
+                top_k=10, warmup_queries=50,
+                label=f"Dense ({hf_name})"
+            )
+            results.append(metrics)
+            print(f"  {key}: Recall@10={metrics['overall']['recall@10']}, "
+                  f"MRR={metrics['overall']['mrr']}")
+        return results
+
     else:
         raise ValueError(f"Unknown ablation: {ablation_name}")
 
@@ -330,18 +437,32 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate retrieval system")
     parser.add_argument("--methods", nargs="+", default=["bm25", "dense", "hybrid"],
                         help="Methods to evaluate")
-    parser.add_argument("--rrf-k", type=int, default=60, help="RRF k parameter")
-    parser.add_argument("--fetch-k", type=int, default=100, help="Fetch k for hybrid")
+    parser.add_argument("--dense-model", type=str, default=DEFAULT_MODEL_KEY,
+                        choices=list(MODEL_REGISTRY.keys()),
+                        help=f"Dense model key (default: {DEFAULT_MODEL_KEY})")
+    parser.add_argument("--rrf-k", type=int, default=HybridRetriever.DEFAULT_RRF_K,
+                        help="RRF k parameter")
+    parser.add_argument("--fetch-k", type=int, default=HybridRetriever.DEFAULT_FETCH_K,
+                        help="Fetch k for hybrid")
+    parser.add_argument("--w-bm25", type=float,
+                        default=HybridRetriever.DEFAULT_WEIGHTS[0],
+                        help="Hybrid BM25 weight")
+    parser.add_argument("--w-dense", type=float,
+                        default=HybridRetriever.DEFAULT_WEIGHTS[1],
+                        help="Hybrid dense weight")
+    parser.add_argument("--fusion", type=str,
+                        default=HybridRetriever.DEFAULT_FUSION,
+                        choices=["rrf", "score"],
+                        help=f"Hybrid fusion method (default: {HybridRetriever.DEFAULT_FUSION})")
     parser.add_argument("--output", type=str, default=None, help="Output path for results")
     parser.add_argument("--ablation", type=str, default=None,
-                        choices=["rrf_k", "fetch_k"],
+                        choices=["rrf_k", "fetch_k", "weights", "dense_model"],
                         help="Run ablation instead of full eval")
     
     args = parser.parse_args()
     
     if args.ablation:
-        results = run_ablation(args.ablation)
-        # Save ablation results
+        results = run_ablation(args.ablation, dense_model=args.dense_model)
         out_path = args.output or os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "results", f"ablation_{args.ablation}.json"
@@ -351,5 +472,10 @@ if __name__ == "__main__":
             json.dump(results, f, indent=2)
         print(f"Ablation results saved to: {out_path}")
     else:
-        run_full_eval(methods=args.methods, rrf_k=args.rrf_k,
-                      fetch_k=args.fetch_k, output_path=args.output)
+        run_full_eval(methods=args.methods,
+                      dense_model=args.dense_model,
+                      rrf_k=args.rrf_k,
+                      fetch_k=args.fetch_k,
+                      weights=(args.w_bm25, args.w_dense),
+                      fusion=args.fusion,
+                      output_path=args.output)

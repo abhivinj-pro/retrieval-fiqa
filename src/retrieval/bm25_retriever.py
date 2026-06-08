@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 from rank_bm25 import BM25Okapi
 
-from src.index.bm25_index import TokenizerLike, tokenize, load_bm25_index
+from src.index.bm25_index import WordTokenizer, tokenize, load_bm25_index
 
 
 class BM25Retriever:
@@ -14,7 +14,7 @@ class BM25Retriever:
         self,
         bm25: Optional[BM25Okapi] = None,
         doc_ids: Optional[List[str]] = None,
-        tokenizer: Optional[TokenizerLike] = None,
+        tokenizer: Optional[WordTokenizer] = None,
         load_path: Optional[str] = None,
     ):
         if bm25 is not None and doc_ids is not None and tokenizer is not None:

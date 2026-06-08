@@ -23,6 +23,3 @@ Thumbs.db
 # Not part of this submission
 Assignment
 KNOWLEDGE.html
-tests/
-results/*
-!results/bench.json
