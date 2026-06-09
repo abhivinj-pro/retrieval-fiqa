@@ -64,8 +64,8 @@ def find_failures(retriever, queries, qrels, corpus, top_k=10, max_failures=10):
                         "doc_id": missed_id,
                         "rank": gold_rank,
                         "score": round(gold_score, 6) if gold_score else None,
-                        "text": (corpus[missed_id].get("title", "") + " " + 
-                                corpus[missed_id].get("text", ""))[:300]
+                        "title": corpus[missed_id].get("title", ""),
+                        "text": corpus[missed_id].get("text", "")
                     }
                 }
                 failures.append(failure)
@@ -97,13 +97,18 @@ def generate_failures_md(failures, output_path):
             lines.append(f"| {r['rank']} | {r['doc_id']} | {r['score']:.4f} | {text_escaped}... |")
         
         lines.append("")
-        lines.append("**Gold Passage:**")
+        lines.append("**Gold Passage (the relevant passage our system missed):**")
         gold = f["gold_doc"]
-        lines.append(f"- Doc ID: {gold['doc_id']}")
+        lines.append(f"- Doc ID: `{gold['doc_id']}`")
         lines.append(f"- Rank in our system: {gold['rank'] if gold['rank'] else 'Not in top-500'}")
         lines.append(f"- Score: {gold['score'] if gold['score'] else 'N/A'}")
-        gold_text = gold["text"].replace("\n", " ")[:200]
-        lines.append(f"- Text: {gold_text}...")
+        gold_title = gold.get("title", "").strip()
+        if gold_title:
+            lines.append(f"- Title: {gold_title}")
+        gold_text = gold["text"].replace("\n", " ").strip()
+        lines.append("- Full text:")
+        lines.append("")
+        lines.append(f"  > {gold_text}")
         lines.append("")
         
         # Auto-diagnosis based on patterns
@@ -123,7 +128,7 @@ def generate_failures_md(failures, output_path):
 def diagnose_failure(failure):
     """Auto-diagnose a failure case."""
     query = failure["query_text"].lower()
-    gold_text = failure["gold_doc"]["text"].lower()
+    gold_text = (failure["gold_doc"].get("title", "") + " " + failure["gold_doc"]["text"]).lower()
     top_texts = " ".join([r["text"].lower() for r in failure["top_5"]])
     gold_rank = failure["gold_doc"]["rank"]
     
